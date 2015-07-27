@@ -2,15 +2,33 @@ var process = require('child_process');
 
 function _command(command, callback) {
 	process.exec(command, {cwd: __dirname}, function(err, stdout, stderr) {
-		callback(stdout.split('\n').join(','));
+		if (stdout === '') {
+			callback('this does not look like a git repo');
+			return;
+		}
+
+		if (stderr) { 
+			callback(stderr);
+			return;
+		}
+
+		callback(null, stdout.split('\n').join(','));
 	});
 }
 
-var command = 'git log -1 --pretty=format:"%h,%H,%s,%f,%b,%at,%ct,%an,%ae,%cn,%ce,%N," && git rev-parse --abbrev-ref HEAD && git tag --contains HEAD';
+var command = 
+	'git log -1 --pretty=format:"%h,%H,%s,%f,%b,%at,%ct,%an,%ae,%cn,%ce,%N,"' + 
+	' && git rev-parse --abbrev-ref HEAD' + 
+	' && git tag --contains HEAD';
 
 module.exports = {
 	getLastCommit : function(callback) {
-		_command(command, function(res) {
+		_command(command, function(err, res) {
+			if (err) {
+				callback(err);
+				return;
+			}
+			
 			var a = res.split(',');
 
 			var tags = [];
@@ -18,7 +36,7 @@ module.exports = {
 				tags = a.slice(13 - a.length);
 			}
 
-			callback({
+			callback(null, {
 				shortHash: a[0],
 				hash: a[1],
 				subject: a[2],
