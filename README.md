@@ -34,3 +34,13 @@ Function returns an object like this:
   "tags": ['R1', 'R2']
 }
 ```
+
+You can add path destination if you want to get git last commit information on another repository:
+```javascript
+var git = require('git-last-commit');
+
+git.getLastCommit(function(err, commit) {
+  // read commit object properties
+  console.log(commit);
+}, {dst: 'some/other/path'});
+```
