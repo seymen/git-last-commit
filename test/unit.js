@@ -140,6 +140,19 @@ describe('feature: git-last-commit to return last commit info', function() {
 		});
 	});
 
+	it('should run the git command on given destination', function(done) {
+		processExecMethod.yields(null, '26e689d,26e689d8769908329a145201be5081233c711663,initial commit,initial-commit,this is the body,1437984178,1437984179,Author1,author@gmail.com,Committer1,committer@gmail.com,note 1\nmaster\nR2\nR1');
+
+		git.getLastCommit(function(err, commit) {
+			expect(err).to.be.null;
+			expect(commit).to.be.ok;
+			expect(processExecMethod.args[0][1].cwd).to.be.ok;
+			expect(processExecMethod.args[0][1].cwd).to.be.equal('path/path/whatever');
+
+			done();
+		}, {dst: 'path/path/whatever'});
+	});
+
 	it('should handle error properly if this is not a git repo', function(done) {
 		processExecMethod.yields(null, '');
 
