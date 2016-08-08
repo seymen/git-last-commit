@@ -1,7 +1,14 @@
-var process = require('child_process');
+var process = require('child_process'),
+	options = {};
 
 function _command(command, callback) {
-	process.exec(command, {cwd: __dirname}, function(err, stdout, stderr) {
+	var dst = __dirname;
+
+	if(!!options && options.dst) {
+		dst = options.dst;
+	}
+
+	process.exec(command, {cwd: dst}, function(err, stdout, stderr) {
 		if (stdout === '') {
 			callback('this does not look like a git repo');
 			return;
@@ -22,7 +29,8 @@ var command =
 	' && git tag --contains HEAD';
 
 module.exports = {
-	getLastCommit : function(callback) {
+	getLastCommit : function(callback, _options) {
+		options = _options;
 		_command(command, function(err, res) {
 			if (err) {
 				callback(err);
