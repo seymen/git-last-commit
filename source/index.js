@@ -1,5 +1,6 @@
 var process = require('child_process'),
-	options = {};
+	options = {},
+  splitCharacter = ',';
 
 function _command(command, callback) {
 	var dst = __dirname;
@@ -19,25 +20,32 @@ function _command(command, callback) {
 			return;
 		}
 
-		callback(null, stdout.split('\n').join(','));
+		callback(null, stdout.split('\n').join(splitCharacter));
 	});
 }
 
+var prettyFormat = ["%h", "%H", "%s", "%f", "%b", "%at", "%ct", "%an", "%ae", "%cn", "%ce", "%N"];
+
 var command = 
-	'git log -1 --pretty=format:"%h,%H,%s,%f,%b,%at,%ct,%an,%ae,%cn,%ce,%N,"' + 
+	'git log -1 --pretty=format:"' + prettyFormat.join(splitCharacter) +'"' + 
 	' && git rev-parse --abbrev-ref HEAD' + 
 	' && git tag --contains HEAD';
 
 module.exports = {
 	getLastCommit : function(callback, _options) {
 		options = _options;
+
+    if (!!options && options.splitChar) {
+      splitCharacter = options.splitChar;
+    }
+
 		_command(command, function(err, res) {
 			if (err) {
 				callback(err);
 				return;
 			}
 			
-			var a = res.split(',');
+			var a = res.split(splitCharacter);
 
 			var tags = [];
 			if (a[a.length-1] !== '') {
