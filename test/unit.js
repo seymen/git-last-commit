@@ -115,6 +115,31 @@ describe('feature: git-last-commit to return last commit info', function() {
 		});
 	});
 
+	it('should work with approved tags in the commit body', function(done){
+		processExecMethod.yields(null,"fcce488,fcce4881389bf2e6acd33a981dda11f6e44804c9,Commit approved in a PR (pull request #16),commit-approved-in-a-pull-request,Commit approved, one of the commits in the PR,,Approved-by: First User <first.user@test.com>,Approved-by: Second User <second.user@test.com>,Approved-by: Third User <third.user@test.com>,,1496996469,1496996469,User That Commited,user.that.commited@test.com,User That Commited,user.that.commited@test.com,,master,");
+		
+		git.getLastCommit(function(err, commit) {
+			expect(err).to.be.null;
+			expect(commit).to.be.ok;
+			expect(commit.shortHash).to.be.equal('fcce488');
+			expect(commit.hash).to.be.equal('fcce4881389bf2e6acd33a981dda11f6e44804c9');
+			expect(commit.subject).to.be.equal('Commit approved in a PR (pull request #16)');
+			expect(commit.sanitizedSubject).to.be.equal('commit-approved-in-a-pull-request');
+			expect(commit.body).to.be.equal('Commit approved');
+			expect(commit.authoredOn).to.be.equal('1496996469');
+			expect(commit.committedOn).to.be.equal('1496996469');
+			expect(commit.author.name).to.be.equal('User That Commited');
+			expect(commit.author.email).to.be.equal('user.that.commited@test.com');
+			expect(commit.committer.name).to.be.equal('User That Commited');
+			expect(commit.committer.email).to.be.equal('user.that.commited@test.com');
+			expect(commit.branch).to.be.equal('master');
+			expect(commit.notes).to.be.empty;
+			expect(commit.tags).to.be.empty;
+
+			done();
+		});
+	});
+
 	it('should parse git commands fully when commit has single tag', function(done) {
 		processExecMethod.yields(null, '26e689d,26e689d8769908329a145201be5081233c711663,initial commit,initial-commit,this is the body,1437984178,1437984179,Author1,author@gmail.com,Committer1,committer@gmail.com,note 1\nmaster\nR1');
 

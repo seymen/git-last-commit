@@ -44,24 +44,32 @@ module.exports = {
 				tags = a.slice(13 - a.length);
 			}
 
+			var shouldSkip = 0;
+			for(var i= 4; i<a.length; i++){
+				if(a[i].length > 0 && !isNaN(a[i])){
+					break;
+				}
+				shouldSkip++;	
+			}
+
 			callback(null, {
 				shortHash: a[0],
 				hash: a[1],
 				subject: a[2],
 				sanitizedSubject: a[3],
 				body: a[4],
-				authoredOn: a[5],
-				committedOn: a[6],
+				authoredOn: a[4+shouldSkip],
+				committedOn: a[5+shouldSkip],
 				author: {
-					name: a[7],
-					email: a[8],
+					name: a[6+shouldSkip],
+					email: a[7+shouldSkip],
 				},
 				committer: {
-					name: a[9],
-					email: a[10]
+					name: a[8+shouldSkip],
+					email: a[9+shouldSkip]
 				},
-				notes: a[11],
-				branch: a[12],
+				notes: a[10+shouldSkip],
+				branch: a[11+shouldSkip],
 				tags: tags
 			});
 		});
