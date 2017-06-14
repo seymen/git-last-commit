@@ -24,7 +24,7 @@ function _command(command, callback) {
 }
 
 var command = 
-	'git log -1 --pretty=format:"%h,%H,%s,%f,%b,%at,%ct,%an,%ae,%cn,%ce,%N,"' + 
+	'git log -1 --pretty=format:"%h,%H,%s,%f,%at,%ct,%an,%ae,%cn,%ce,%N,"' + 
 	' && git rev-parse --abbrev-ref HEAD' + 
 	' && git tag --contains HEAD';
 
@@ -41,35 +41,27 @@ module.exports = {
 
 			var tags = [];
 			if (a[a.length-1] !== '') {
-				tags = a.slice(13 - a.length);
+				tags = a.slice(12 - a.length);
 			}
-
-			var shouldSkip = 0;
-			for(var i= 4; i<a.length; i++){
-				if(a[i].length > 0 && !isNaN(a[i])){
-					break;
-				}
-				shouldSkip++;	
-			}
-
+			
 			callback(null, {
 				shortHash: a[0],
 				hash: a[1],
 				subject: a[2],
 				sanitizedSubject: a[3],
-				body: a[4],
-				authoredOn: a[4+shouldSkip],
-				committedOn: a[5+shouldSkip],
+				// body: a[4],
+				authoredOn: a[4],
+				committedOn: a[5],
 				author: {
-					name: a[6+shouldSkip],
-					email: a[7+shouldSkip],
+					name: a[6],
+					email: a[7],
 				},
 				committer: {
-					name: a[8+shouldSkip],
-					email: a[9+shouldSkip]
+					name: a[8],
+					email: a[9]
 				},
-				notes: a[10+shouldSkip],
-				branch: a[11+shouldSkip],
+				notes: a[10],
+				branch: a[11],
 				tags: tags
 			});
 		});
