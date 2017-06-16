@@ -15,7 +15,7 @@ function _command(command, callback) {
 			return;
 		}
 
-		if (stderr) { 
+		if (stderr) {
 			callback(stderr);
 			return;
 		}
@@ -26,9 +26,9 @@ function _command(command, callback) {
 
 var prettyFormat = ["%h", "%H", "%s", "%f", "%b", "%at", "%ct", "%an", "%ae", "%cn", "%ce", "%N"];
 
-var command = 
-	'git log -1 --pretty=format:"' + prettyFormat.join(splitCharacter) +'"' + 
-	' && git rev-parse --abbrev-ref HEAD' + 
+var command =
+	'git log -1 --pretty=format:"' + prettyFormat.join(splitCharacter) +'"' +
+	' && git rev-parse --abbrev-ref HEAD' +
 	' && git tag --contains HEAD';
 
 module.exports = {
@@ -44,7 +44,7 @@ module.exports = {
 				callback(err);
 				return;
 			}
-			
+
 			var a = res.split(splitCharacter);
 
 			var tags = [];
