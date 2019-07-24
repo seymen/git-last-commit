@@ -1,77 +1,74 @@
-var process = require('child_process'),
-	options = {},
-  splitCharacter = ',';
+const process = require('child_process'),
+  splitCharacter = '<##>'
 
-function _command(command, callback) {
-	var dst = __dirname;
+const executeCommand = (command, options, callback) => {
+  let dst = __dirname
 
-	if(!!options && options.dst) {
-		dst = options.dst;
-	}
+  if(!!options && options.dst) {
+    dst = options.dst
+  }
 
-	process.exec(command, {cwd: dst}, function(err, stdout, stderr) {
-		if (stdout === '') {
-			callback('this does not look like a git repo');
-			return;
-		}
-
-		if (stderr) {
-			callback(stderr);
-			return;
-		}
-
-		callback(null, stdout.split('\n').join(splitCharacter));
-	});
-}
-
-var prettyFormat = ["%h", "%H", "%s", "%f", "%b", "%at", "%ct", "%an", "%ae", "%cn", "%ce", "%N"];
-
-var command =
-	'git log -1 --pretty=format:"' + prettyFormat.join(splitCharacter) +'"' +
-	' && git rev-parse --abbrev-ref HEAD' +
-	' && git tag --contains HEAD';
-
-module.exports = {
-	getLastCommit : function(callback, _options) {
-		options = _options;
-
-    if (!!options && options.splitChar) {
-      splitCharacter = options.splitChar;
+  process.exec(command, {cwd: dst}, function(err, stdout, stderr) {
+    if (stdout === '') {
+      callback('this does not look like a git repo')
+      return
     }
 
-		_command(command, function(err, res) {
-			if (err) {
-				callback(err);
-				return;
-			}
+    if (stderr) {
+      callback(stderr)
+      return
+    }
 
-			var a = res.split(splitCharacter);
+    callback(null, stdout)
+  })
+}
 
-			var tags = [];
-			if (a[a.length-1] !== '') {
-				tags = a.slice(13 - a.length);
-			}
+const prettyFormat = ["%h", "%H", "%s", "%f", "%b", "%at", "%ct", "%an", "%ae", "%cn", "%ce", "%N", ""]
 
-			callback(null, {
-				shortHash: a[0],
-				hash: a[1],
-				subject: a[2],
-				sanitizedSubject: a[3],
-				body: a[4],
-				authoredOn: a[5],
-				committedOn: a[6],
-				author: {
-					name: a[7],
-					email: a[8],
-				},
-				committer: {
-					name: a[9],
-					email: a[10]
-				},
-				notes: a[11],
-				branch: a[12],
-				tags: tags
-			});
-		});
-	}
-};
+const getCommandString = splitCharacter =>
+  'git log -1 --pretty=format:"' + prettyFormat.join(splitCharacter) +'"' +
+    ' && git rev-parse --abbrev-ref HEAD' +
+    ' && git tag --contains HEAD'
+
+const getLastCommit = (callback, options) => {
+  const command = getCommandString(splitCharacter)
+
+  executeCommand(command, options, function(err, res) {
+    if (err) {
+      callback(err)
+      return
+    }
+
+    var a = res.split(splitCharacter)
+
+    // e.g. master\n or master\nv1.1\n or master\nv1.1\nv1.2\n
+    var branchAndTags = a[a.length-1].split('\n').filter(n => n)
+    var branch = branchAndTags[0]
+    var tags = branchAndTags.slice(1)
+
+    callback(null, {
+      shortHash: a[0],
+      hash: a[1],
+      subject: a[2],
+      sanitizedSubject: a[3],
+      body: a[4],
+      authoredOn: a[5],
+      committedOn: a[6],
+      author: {
+        name: a[7],
+        email: a[8],
+      },
+      committer: {
+        name: a[9],
+        email: a[10]
+      },
+      notes: a[11],
+      branch,
+      tags
+    })
+  })
+}
+
+module.exports = {
+  getLastCommit
+}

@@ -44,14 +44,3 @@ git.getLastCommit(function(err, commit) {
   console.log(commit);
 }, {dst: 'some/other/path'});
 ```
-
-Function uses comma as the format separator for the `git log` command output. You can customise this by providing another character using `splitChar` option:
-
-```javascript
-var git = require('git-last-commit');
-
-git.getLastCommit(function(err, commit) {
-  // read commit object properties
-  console.log(commit);
-}, {splitChar: '|'});
-```
