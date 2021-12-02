@@ -22,6 +22,6 @@ export interface Options {
   dst: string;
 }
 
-type GetLastCommitCallback = (err: Error, commit: Commit) => void;
+type GetLastCommitCallback = (err: Error | null, commit: Commit) => void;
 
 export const getLastCommit: (callback: GetLastCommitCallback, options?: Options) => void;
