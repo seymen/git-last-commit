@@ -3,6 +3,7 @@
   "version": "1.0.1",
   "description": "Read details of the last commit including tags",
   "main": "./source/index.js",
+  "types": "./index.d.ts",
   "scripts": {
     "test": "node_modules/.bin/mocha",
     "lint": "node_modules/.bin/eslint source/**",
