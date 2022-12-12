@@ -10,7 +10,7 @@ const executeCommand = (command, options, callback) => {
 
   process.exec(command, {cwd: dst}, function(err, stdout, stderr) {
     if (stdout === '') {
-      callback('this does not look like a git repo')
+      callback(new Error('this does not look like a git repo'))
       return
     }
 
