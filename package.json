@@ -27,7 +27,7 @@
   "homepage": "https://github.com/seymen/git-last-commit",
   "devDependencies": {
     "chai": "^4",
-    "mocha": "^6",
+    "mocha": "^10",
     "eslint": "^6",
     "nyc": "^14.1.1",
     "sinon": "^7"
