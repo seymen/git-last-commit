@@ -23,12 +23,27 @@ const executeCommand = (command, options, callback) => {
   })
 }
 
-const prettyFormat = ["%h", "%H", "%s", "%f", "%b", "%at", "%ct", "%an", "%ae", "%cn", "%ce", "%N", ""]
+// https://git-scm.com/docs/pretty-formats
+const prettyFormat = [
+  "%h", // commit hash
+  "%H", // abbreviated commit hash
+  "%s", // subject
+  "%f", // sanitized subject line, suitable for a file name
+  "%b", // body
+  "%at", // author daate, UNIX timestamp
+  "%ct", // committer date, UNIX timestamp
+  "%an", // author name
+  "%ae", // author email
+  "%cn", // committer name
+  "%ce", // committer email
+  "%N", // commit notes
+  "",
+]
 
 const getCommandString = splitCharacter =>
   'git log -1 --pretty=format:"' + prettyFormat.join(splitCharacter) +'"' +
-    ' && git rev-parse --abbrev-ref HEAD' +
-    ' && git tag --contains HEAD'
+    ' && git rev-parse --abbrev-ref HEAD' + // gets the branch name
+    ' && git tag --contains HEAD' // gets the tags
 
 const getLastCommit = (callback, options) => {
   const command = getCommandString(splitCharacter)
